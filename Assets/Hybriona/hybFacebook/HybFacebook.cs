@@ -92,16 +92,25 @@ public class HybFacebook : MonoBehaviour
 
     private IEnumerator CheckForCallback()
     {
-        WaitForSeconds waitForSeconds = new WaitForSeconds(4);
+        WaitForSeconds waitForSeconds = new WaitForSeconds(5);
+        int counter = 0;
         while(true)
         {
             yield return waitForSeconds;
-
-            WWW www = new WWW($"https://vps.hybriona.com/api/fb/process.php?gettoken&state={_stateParam}");
-            yield return www;
-            if(string.IsNullOrEmpty(www.error))
+            counter++;
+            if(counter > 12)
             {
-                string data = www.text;
+                FBLoginResponse loginResponse = new FBLoginResponse(isError: true, errorDescription: "Timeout");
+                if (loginCompletedAction != null)
+                    loginCompletedAction(loginResponse);
+                yield break;
+            }
+
+            UnityWebRequest request = UnityWebRequest.Get($"https://vps.hybriona.com/api/fb/process.php?gettoken&state={_stateParam}");
+            yield return request.SendWebRequest();
+            if(request.result == UnityWebRequest.Result.Success)
+            {
+                string data = request.downloadHandler.text;
                 if (data.Length > 5)
                 {
                     var responseNode =  SimpleJSON.JSON.Parse(data);
@@ -123,10 +132,6 @@ public class HybFacebook : MonoBehaviour
                         if (loginCompletedAction != null)
                             loginCompletedAction(loginResponse);
                     }
-                    
-
-                    
-
                     
                     yield break;
 
