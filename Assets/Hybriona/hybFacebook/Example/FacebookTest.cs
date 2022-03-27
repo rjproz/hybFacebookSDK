@@ -39,6 +39,7 @@ public class FacebookTest : MonoBehaviour
         }
         else
         {
+            Debug.Log("Login successful");
             LoadUserData();
         }
     }

@@ -5,7 +5,7 @@ using UnityEngine.Networking;
 public class HybFacebook : MonoBehaviour
 {
     public static string accessToken { get; private set; }
-
+    
     private static string _appId;
     private static string _redirectUri;
     private static string _scope = "email,public_profile";
