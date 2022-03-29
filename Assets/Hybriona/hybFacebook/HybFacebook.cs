@@ -59,6 +59,7 @@ public class HybFacebook : MonoBehaviour
     
     public static void Login(System.Action<FBLoginResponse> loginCompleted)
     {
+        m_instance.StopAllCoroutines();
         accessToken = "";
 
         loginCompletedAction = loginCompleted;
@@ -73,6 +74,12 @@ public class HybFacebook : MonoBehaviour
     public static void GraphAPI(string path,System.Action<UnityWebRequest> callback)
     {
         m_instance.StartCoroutine(m_instance.ProcessGraphAPI(path,callback));
+    }
+
+    public static void OpenShareDialog(string shareUrl)
+    {
+        string url = $"https://www.facebook.com/dialog/share?app_id={_appId}&display=popup&href={shareUrl}";
+        Application.OpenURL(url);
     }
 
     public static void Logout()

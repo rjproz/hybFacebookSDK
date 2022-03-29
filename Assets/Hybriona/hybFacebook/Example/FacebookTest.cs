@@ -28,6 +28,14 @@ public class FacebookTest : MonoBehaviour
         {
             HybFacebook.Login(LoginComplete);
         }
+
+        if (HybFacebook.IsLoggedIn())
+        {
+            if (Input.GetKeyDown(KeyCode.S))
+            {
+                HybFacebook.OpenShareDialog("https://www.hybriona.com");
+            }
+        }
     }
 
 
