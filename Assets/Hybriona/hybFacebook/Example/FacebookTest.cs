@@ -6,6 +6,7 @@ public class FacebookTest : MonoBehaviour
     // Start is called before the first frame update
     public RawImage picture;
     public Text nameTarget;
+    public Text logText;
     void Start()
     {
         string redirectUrl = "https://vps.hybriona.com/api/fb/process.php";
@@ -43,10 +44,12 @@ public class FacebookTest : MonoBehaviour
     {
         if (loginReponse.isError)
         {
+            Log("Login failed with " + loginReponse.errorDescription, true);
             Debug.LogError("Login failed with "+loginReponse.errorDescription);
         }
         else
         {
+            Log("Login successful");
             Debug.Log("Login successful");
             LoadUserData();
         }
@@ -70,4 +73,15 @@ public class FacebookTest : MonoBehaviour
     }
 
 
+    private void Log(string msg, bool error = false)
+    {
+        if (!error)
+        {
+            logText.text = msg + "\n" + logText.text;
+        }
+        else
+        {
+            logText.text = "<color=#FF3B3B>" + msg + "</color>\n" + logText.text;
+        }
+    }
 }

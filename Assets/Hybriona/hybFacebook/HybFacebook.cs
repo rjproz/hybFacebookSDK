@@ -12,7 +12,7 @@ public class HybFacebook : MonoBehaviour
     private static string _stateParam;
 
     private static  System.Action<FBLoginResponse> loginCompletedAction;
-
+    private static System.DateTime loginStartedTime;
 
     public static bool IsLoggedIn()
     {
@@ -61,13 +61,13 @@ public class HybFacebook : MonoBehaviour
     {
         m_instance.StopAllCoroutines();
         accessToken = "";
-
+        loginStartedTime = System.DateTime.Now;
         loginCompletedAction = loginCompleted;
         _stateParam = SystemInfo.deviceUniqueIdentifier + System.DateTime.UtcNow.ToFileTime();
         string url = $"https://www.facebook.com/v13.0/dialog/oauth?response_type=token&client_id={_appId}&redirect_uri={_redirectUri}&state={_stateParam}&scope={_scope}";
-        Application.OpenURL(url);
-        m_instance.StartCoroutine(m_instance.CheckForCallback());
         
+        m_instance.StartCoroutine(m_instance.CheckForCallback());
+        Application.OpenURL(url);
     }
 
 
@@ -100,12 +100,12 @@ public class HybFacebook : MonoBehaviour
     private IEnumerator CheckForCallback()
     {
         WaitForSeconds waitForSeconds = new WaitForSeconds(5);
-        int counter = 0;
+ 
         while(true)
         {
             yield return waitForSeconds;
-            counter++;
-            if(counter > 12)
+            
+            if((System.DateTime.Now - loginStartedTime).TotalMinutes > 1)
             {
                 FBLoginResponse loginResponse = new FBLoginResponse(isError: true, errorDescription: "Timeout");
                 if (loginCompletedAction != null)
@@ -146,6 +146,13 @@ public class HybFacebook : MonoBehaviour
                     //& error = access_denied
                     //& error_description = Permissions + error.
                 }
+            }
+            else
+            {
+
+                FBLoginResponse loginResponse = new FBLoginResponse(isError: true, errorDescription: request.result.ToString());
+                if (loginCompletedAction != null)
+                    loginCompletedAction(loginResponse);
             }
         }
 
